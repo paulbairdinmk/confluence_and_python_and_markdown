@@ -4,6 +4,30 @@ from urllib.parse import unquote
 import re
 import sys
 
+# ===========================================================
+# Purpose
+# Performs pre-publication validation of the Markdown corpus before pages are imported back into Confluence. It verifies that each Markdown file contains valid metadata, usable content, and working local references, and identifies issues that could cause import failures or broken links.
+#
+# Why this script exists
+#
+# After HTML has been converted to Markdown and metadata has been injected, this script acts as the final quality gate before content is committed to Git or published back to Confluence.
+#
+# It answers the question:
+#
+# "Is this Markdown corpus safe to import?"
+#
+# Validation Checks
+# YAML Front Matter
+#
+# Checks that every Markdown file:
+#
+# Starts with YAML front matter (---)
+# Has a closing YAML delimiter
+# Contains exactly one title
+# Contains exactly one confluence_space
+# Contains exactly one confluence_parent_page
+# ========================================================================
+
 
 print("VALIDATOR SCRIPT STARTED")
 

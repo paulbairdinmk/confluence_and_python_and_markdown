@@ -1,0 +1,150 @@
+@startuml
+title Confluence Space Migration Process
+
+skinparam monochrome true
+skinparam shadowing false
+
+start
+
+:Confluence Space;
+
+fork
+
+    :HTML Export;
+    note right
+        Output:
+        Confluence-input\
+        *.html
+        attachments\
+    end note
+
+fork again
+
+    :Export Label Lists;
+    note right
+        Output:
+        labels\
+        *.txt
+    end note
+
+fork again
+
+    :Export Content Report;
+    note right
+        Output:
+        content.xlsx
+        (Title ↔ Content ID)
+    end note
+
+end fork
+
+:html_corrections.py;
+note right
+    Reads HTML title
+    Removes space prefix
+    Renames numeric file names
+    to page titles
+end note
+
+:normalise_label_files.py;
+note right
+    Converts date-based labels
+    to ISO format
+    Creates:
+    labels_normalised\
+end note
+
+:extract_labelled_pages.py;
+note right
+    Inputs:
+    - Confluence-input\
+    - labels_normalised\
+    
+    Outputs:
+    - extracted\
+    - reports\
+      page_metadata.json
+      matched_files.csv
+      missing_pages.txt
+      multiple_labels.csv
+      unlabelled_html.txt
+end note
+
+:Copy attachments;
+note right
+    extracted\
+    attachments\
+end note
+
+:HTML_to_Markdown_bulk_converter.py;
+note right
+    Inputs:
+      extracted\
+    
+    Outputs:
+      Confluence-output\
+      *.md
+      attachments\
+end note
+
+:inject_labels_from_metadata.py;
+note right
+    Inputs:
+      page_metadata.json
+      Confluence-output\
+    
+    Updates:
+      YAML labels
+      Cleans titles
+end note
+
+:Bulk_add_header_2_lines.py;
+note right
+    Adds:
+      confluence_space
+      confluence_parent_page
+end note
+
+:YAML_validation_script.py;
+note right
+    Validates:
+      YAML
+      Links
+      Attachments
+      Duplicate titles
+      Metadata
+end note
+
+if (Validation Passed?) then (Yes)
+
+    :Copy Markdown Corpus;
+    
+    note right
+        Destination:
+        markdown-po-docs\
+        docs\
+    end note
+
+    :Raise ADO Ticket;
+
+    :Git Commit / PR;
+
+    :Automated Confluence Import;
+
+    note right
+        Creates:
+        - Pages
+        - Labels
+        - Hierarchy
+        - Attachments
+    end note
+
+else (No)
+
+    :Review Validation Report;
+
+endif
+
+stop
+
+@enduml

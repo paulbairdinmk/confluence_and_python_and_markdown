@@ -1,0 +1,43 @@
+Confluence Export
+├── Confluence-input\*.html
+├── Confluence-input\attachments\
+├── Confluence-input\styles\
+├── labels\*.txt (these are several text files created using the "filter by label" macro (per label) and then screenscraping the content and pasting into a text file - note that dates in particular can be rendered differently to the Confluence export and need correcting)
+└── content.xlsx (this is created using the Confluence export option "CSV". Then extract, look for the content sub folder, extract the content.csv file, save it as an XLSX file. The relevant columns to keep are column A "contentid", column B "contenttype" - select "PAGE", and column D "title. This links the numeric filename against the alphabetic filename for when Confluence only pulls the numeric filename during an HTML space export).
+            │
+            ▼
+html_corrections.py
+            │
+            ▼
+normalise_label_files.py
+            │
+            ▼
+extract_labelled_pages.py
+            │
+            ├── extracted\
+            └── reports\
+                 page_metadata.json
+                 matched_files.csv
+                 missing_pages.txt
+                 multiple_labels.csv
+            │
+            ▼
+HTML_to_Markdown_bulk_converter.py
+            │
+            ▼
+Confluence-output\*.md
+            │
+            ▼
+inject_labels_from_metadata.py
+            │
+            ▼
+Bulk_add_header_2_lines.py
+            │
+            ▼
+YAML_validation_script.py
+            │
+            ▼
+Git Repository
+            │
+            ▼
+Confluence Recreation
